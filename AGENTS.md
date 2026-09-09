@@ -45,16 +45,6 @@ uv run python -m unittest acestep.training.test_lora_utils.TestUnwrapDecoder.tes
 uv run python -m unittest discover -s acestep/training -p "*_test.py"
 ```
 
-## Repository Map (Orientation)
-
-- `acestep/inference.py` — user-facing entry points (`GenerationParams`, `GenerationConfig`, `generate_music`); large file, treat as facade.
-- `acestep/core/generation/handler/` — generation pipeline, decomposed into single-responsibility mixins: `generate_music*.py` (orchestration), `conditioning_*.py` (mask/latent/text conditioning), `diffusion.py`, `repaint_step_injection.py`, `repaint_waveform_splice.py`, `padding_utils.py`, `init_service*.py`.
-- `acestep/models/` — DiT variants (`base`, `turbo`, `xl_*`, `sft`, `mlx`); sampling loops are duplicated per variant, keep them in sync or delegate to `models/common/`.
-- `acestep/ui/gradio/` — Gradio UI (modes, i18n in `ui/gradio/i18n/*.json`, batch/results handling).
-- `acestep/api/` — HTTP API (`/release_task`, `/query_result`, `/v1/audio`; request models in `api/http/release_task_models.py`).
-- `acestep/constants.py` — task types, track names, instructions, duration limits (`DURATION_MIN/MAX`), `TASK_TYPES_TURBO` vs `TASK_TYPES_BASE`.
-- `docs/` — user docs per language (`en`/`zh`/`ja`/`ko`); update alongside behavior changes to user-facing parameters.
-
 ## Scope and Change Control (Required)
 
 - Solve one problem per task/PR.
@@ -163,20 +153,6 @@ def inject_lora_into_dit(
 - Use `gpu_config.py` for hardware detection
 - Do not alter non-target platform paths unless explicitly required
 - Changes to CUDA code should not break MPS/XPU/CPU paths
-
-## Local Inference Environment and Model Facts
-
-Verified on the dev box (8 GB RTX 5060 laptop); relevant for any runtime-affecting change:
-
-- Model checkpoints live in `./checkpoints/`: `acestep-v15-turbo`, `acestep-v15-base`, `acestep-5Hz-lm-0.6B/1.7B`, `Qwen3-Embedding-0.6B`, `vae/`. Base and turbo are both ~4.5 GB.
-- Turbo vs base behavior: turbo is CFG-distilled — `guidance_scale` is forced to 1.0 and 8 steps suffice; base needs CFG (default 7.0) and ~60 steps. `extract`/`lego`/`complete` tasks exist only on base (`TASK_TYPES_BASE`).
-- `repaint`/`cover`/`extract` skip the 5Hz LM entirely (`skip_lm_tasks`); LM params are ignored for them.
-- Script-level generation pattern: init `AceStepHandler` + `LLMHandler`, then call `acestep.inference.generate_music(dit_handler, llm_handler, params, config, save_dir=...)`.
-- VRAM: the preflight check (`_vram_preflight_check`) can reject a second in-process generation on 8 GB cards due to allocator fragmentation (~300 MB) even though a fresh process passes. The reliable mitigation is **one generation per process**. Do NOT use `PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True` on this box (WSL2 + RTX 5060 + CUDA 13.4 UMD): it triggers `CUDA driver error: device not ready` at model load. The driver error can also appear transiently after GPU idle; a heavy CUDA warm-up alloc retries through it. Keep the preflight; do not default to `ACESTEP_SKIP_VRAM_PREFLIGHT=1`.
-- Base-model repaint hole-fills collapse into loud bass-dominant mush at the default `guidance_scale=7.0` (verified across captions, hole lengths, and metas — the caption does not steer the fill at CFG 7). `guidance_scale=3.0` on base produces context-faithful fills; turbo (CFG-distilled, guidance forced 1.0) also fills sanely. When testing audio content, use spectral fingerprints (band-energy shares), not RMS alone — RMS cannot distinguish "quiet piano" from "bass wall".
-- VAE decode (tiled) dominates wall time (~35 s for 30 s audio); diffusion itself is seconds.
-- Output audio is peak-normalized to -1 dB before saving. Verifying "preserved regions are sample-exact" (e.g., repaint non-repaint splice) therefore requires gain correction before comparing residuals.
-- `flow_edit_morph` parameters exist only in the Python layer (`GenerationParams`) and Gradio UI — not in the HTTP API request models.
 
 ## Feature Gating and WIP Safety
 

@@ -47,11 +47,11 @@ python train.py {vanilla|fixed|estimate}  # 训练 CLI(Training V2 / Side-Step �
 - `acestep/text_tasks/`:外部 LM(OpenRouter 等)captioning/标注集成,含密钥安全存储。
 - `acestep/third_parts/nano-vllm` 是 vendored 本地包(`pyproject.toml` 的 `[tool.uv.sources]` 指向它),不是 PyPI 依赖;macOS arm64 不安装。
 
-## 多平台纪律(强制)
+## 多平台纪律
 
-- 硬件检测统一走 `acestep/gpu_config.py`,不要在业务代码里自行判断设备。
-- 修 CUDA 相关代码时不得改变 CPU / MPS / XPU / ROCm 行为;跨平台改动必须隔离并在 PR 说明中论证。
-- 依赖含平台 marker(flash-attn 仅 Linux;MLX 仅 macOS arm64;torch 按平台走不同 index),改 `pyproject.toml` 时勿破坏 `required-environments` 四个目标环境。
+- 本 fork 已精简为 **Linux x86_64 + CUDA 专用研究环境**(pyproject 仅保留该目标环境;Windows/macOS/ROCm/XPU 启动脚本与对应依赖已删除)。上游仍维护多平台,故 `acestep/gpu_config.py` 的 mps/xpu/rocm 分支与 `models/mlx/` 代码原样保留(永不命中),不要顺手清理它们。
+- 仍然只在 `acestep/gpu_config.py` 里做硬件检测,不要在业务代码里自行判断设备。
+- 改 `pyproject.toml` 时保持 `required-environments` 为 linux x86_64,勿恢复多平台 marker。
 
 ## 变更纪律(强制,源自 CONTRIBUTING.md 与 Discussion #408/#365)
 

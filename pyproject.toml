@@ -26,7 +26,7 @@ dependencies = [
     "python-multipart>=0.0.18",
     "numba>=0.63.1",
     "vector-quantize-pytorch>=1.27.15",
-    "torchcodec>=0.9.1",
+    "torchcodec==0.10",
     "torchao>=0.16.0,<0.17.0",
     "toml",
     # Training dependencies
@@ -63,6 +63,7 @@ required-environments = [
 [tool.uv.sources]
 nano-vllm = { path = "acestep/third_parts/nano-vllm" }
 torch = [{ index = "pytorch-cu128" }]
+torchcodec = [{ index = "pytorch-cu128" }]
 torchvision = [{ index = "pytorch-cu128" }]
 torchaudio = [{ index = "pytorch-cu128" }]
 flash-attn = { index = "astral-cu128" }

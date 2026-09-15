@@ -46,10 +46,7 @@ echo
 
 # Test 3: Check accelerator
 echo "[Test 3] Checking accelerator..."
-if [[ "$OS_NAME" == "Darwin" && "$ARCH" == "arm64" ]]; then
-    echo "[INFO] Apple Silicon - MLX backend available"
-    echo "  Recommended: ./start_gradio_ui_macos.sh"
-elif [[ "$OS_NAME" == "Linux" ]]; then
+if [[ "$OS_NAME" == "Linux" ]]; then
     if command -v nvidia-smi &>/dev/null; then
         echo "[INFO] NVIDIA CUDA GPU available"
         echo "  Recommended: ./start_gradio_ui.sh"

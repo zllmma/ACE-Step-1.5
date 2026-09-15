@@ -145,24 +145,15 @@ The UI automatically selects the best configuration for your GPU. All settings (
 
 ## 🚀 Launch Scripts
 
-Ready-to-use launch scripts for all platforms with auto environment detection, update checking, and dependency installation.
+Ready-to-use launch scripts (Linux + CUDA) with auto environment detection, update checking, and dependency installation.
 
 | Platform | Scripts | Backend |
 |----------|---------|---------|
-| **Windows** | `start_gradio_ui.bat`, `start_api_server.bat` | CUDA |
-| **Windows (ROCm)** | `start_gradio_ui_rocm.bat`, `start_api_server_rocm.bat` | AMD ROCm |
 | **Linux** | `start_gradio_ui.sh`, `start_api_server.sh` | CUDA |
-| **macOS** | `start_gradio_ui_macos.sh`, `start_api_server_macos.sh` | MLX (Apple Silicon) |
 
 ```bash
-# Windows
-start_gradio_ui.bat
-
 # Linux
 chmod +x start_gradio_ui.sh && ./start_gradio_ui.sh
-
-# macOS (Apple Silicon)
-chmod +x start_gradio_ui_macos.sh && ./start_gradio_ui_macos.sh
 ```
 
 ### ⚙️ Customizing Launch Settings

@@ -46,11 +46,13 @@ dependencies = [
     "flash-attn>=2.8.2",
     "laion-clap>=1.1.7",
     "librosa>=0.11.0",
+    "qwen-asr>=0.0.6",
 ]
 
 [[tool.uv.index]]
 name = "astral-cu128"
 url = "https://wheels.astral.sh/simple/cu128/"
+explicit = true
 
 [[tool.uv.index]]
 name = "pytorch-cu128"
